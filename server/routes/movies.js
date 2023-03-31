@@ -2,7 +2,8 @@ const express = require("express");
 const Movie = require("../models/movie");
 const router = express.Router();
 
-//api/movies/
+
+// http://localhost:3001/api/movies
 router.get('/', async (req, res) => {
     try {
         const movies = await Movie.find();
@@ -13,9 +14,12 @@ router.get('/', async (req, res) => {
     }
 });
 
+// http://localhost:3001/api/movies/:id
 router.get('/:id', async (req, res) => {
     try {
         const movie = await Movie.findById(req.params.id);
+        if (!movie)
+            return res.status(500).send(`Movie ${req.params.id} not found`);
         res.json(movie);
     } catch (err) {
         console.log(`Error getting movie: ${err}`);
@@ -23,6 +27,8 @@ router.get('/:id', async (req, res) => {
     }
 });
 
+
+// http://localhost:3001/api/movies
 router.post('/', async (req, res) => {
     try {
         const movie = new Movie(req.body);
@@ -34,11 +40,15 @@ router.post('/', async (req, res) => {
     }
 });
 
+// Update
+// http://localhost:3001/api/movies/:id
 router.put('/:id', async (req, res) => {
     try {
         const movie = await Movie.findByIdAndUpdate(req.params.id, req.body, {
             new: true,
         });
+        if (!movie)
+            return res.status(500).send('Update error - Movie not found');
         res.json(movie);
     } catch (err) {
         console.log(`Error updating movie: ${err}`);
@@ -46,29 +56,14 @@ router.put('/:id', async (req, res) => {
     }
 });
 
+
+// http://localhost:3001/api/movies/:id
 router.delete('/:id', async (req, res) => {
     try {
         await Movie.findByIdAndDelete(req.params.id);
         res.send('Movie deleted successfully');
     } catch (err) {
         console.log(`Error deleting movie: ${err}`);
-        res.status(500).send('Server error');
-    }
-});
-
-router.get('/search', async (req, res) => {
-    try {
-        const { query } = req.query;
-        const movies = await Movie.find({
-            $or: [
-                { title: { $regex: query, $options: 'i' } },
-                { description: { $regex: query, $options: 'i' } },
-                { cast: { $regex: query, $options: 'i' } },
-            ],
-        });
-        res.json(movies);
-    } catch (err) {
-        console.log("Error searching movies: ${err}");
         res.status(500).send('Server error');
     }
 });

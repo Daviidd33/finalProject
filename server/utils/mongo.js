@@ -1,12 +1,12 @@
 const mongoose = require("mongoose");
 
-const mongoCS =
-    "mongodb+srv://dav07953:1234@cluster0.fufwarw.mongodb.net/cinemovies?retryWrites=true&w=majority";
+const mongoLocalCS = "mongodb://localhost:27017/cinemovies?retryWrites=true&w=majority"
+const mongoCloudCS = "mongodb+srv://dav07953:1234@cluster0.fufwarw.mongodb.net/cinemovies?retryWrites=true&w=majority";
 
 function mongooseConnectDB() {
     // Connect to MongoDB
     mongoose
-        .connect(mongoCS, {
+        .connect(mongoLocalCS, {
             useNewUrlParser: true,
             useUnifiedTopology: true,
         })
