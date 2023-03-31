@@ -1,32 +1,33 @@
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
-import { Card, ListGroup, ListGroupItem, Button } from 'react-bootstrap';
-import { getMovie, rateMovie } from '../../api';
+import { useParams, Link, useNavigate } from 'react-router-dom';
+import { Card, ListGroup, ListGroupItem, Button, Modal } from 'react-bootstrap';
+import { deleteMovie, getMovie } from '../../api';
 import defmovie from '../../assets/defmovie.png'
+import YouTube from 'react-youtube';
 
 const MovieDetails = () => {
     const [movie, setMovie] = useState(null);
-    const [rating, setRating] = useState(0);
-    const [isRatingSubmitting, setIsRatingSubmitting] = useState(false);
     const { id } = useParams();
+    const [showModal, setShowModal] = useState(false);
+    const navigate = useNavigate()
 
-    const handleRatingChange = (event) => {
-        setRating(event.target.value);
+    const handleClose = () => setShowModal(false);
+    const handleConfirm = () => {
+        deleteMovie(id)
+        handleClose();
+        navigate("/")
     };
 
-    const handleRatingSubmit = async () => {
-        setIsRatingSubmitting(true);
+    const getYoutubeIdFromUrl = (url) => {
+        const index = url.indexOf('v=');
 
-        try {
-            await rateMovie(id, rating);
-            const updatedMovie = await getMovie(id);
-            setMovie(updatedMovie);
-        } catch (err) {
-            console.error(err);
-        } finally {
-            setIsRatingSubmitting(false);
+        if (index !== -1) {
+            const videoId = url.slice(index + 2);
+            return videoId;
         }
-    };
+
+        return null;
+    }
 
     useEffect(() => {
         const fetchMovie = async () => {
@@ -48,35 +49,39 @@ const MovieDetails = () => {
                 <Card.Body>
                     <Card.Title>{movie.title}</Card.Title>
                     <Card.Text>{movie.description}</Card.Text>
+
+                    <Link to={`/edit/${movie._id}`}>
+                        <Button variant="primary">Edit</Button>
+                    </Link>
+                    <Button style={{ marginLeft: "10px" }} variant="danger" onClick={() => setShowModal(true)}>Delete</Button>
                 </Card.Body>
                 <ListGroup className="list-group-flush">
-                    <ListGroupItem>Release Date: {movie.releaseDate}</ListGroupItem>
+                    <ListGroupItem>Release Date: {movie.releaseDate.split("T")[0]}</ListGroupItem>
                     <ListGroupItem>Runtime: {movie.runtime} minutes</ListGroupItem>
                     <ListGroupItem>
                         Cast: {movie.cast.join(', ')}
                     </ListGroupItem>
-                    <ListGroupItem>
-                        Rating: {movie.ratings.reduce((total, rating) => total + rating.rating, 0) / movie.ratings.length} ({movie.ratings.length} ratings)
-                    </ListGroupItem>
                 </ListGroup>
-                <Card.Body>
-                    <select value={rating} onChange={handleRatingChange}>
-                        <option value="0">Rate this movie</option>
-                        <option value="1">1 star</option>
-                        <option value="2">2 stars</option>
-                        <option value="3">3 stars</option>
-                        <option value="4">4 stars</option>
-                        <option value="5">5 stars</option>
-                    </select>
-                    <Button
-                        variant="primary"
-                        disabled={!rating || isRatingSubmitting}
-                        onClick={handleRatingSubmit}
-                    >
-                        {isRatingSubmitting ? 'Submitting...' : 'Submit'}
-                    </Button>
-                </Card.Body>
+                {movie.trailer && getYoutubeIdFromUrl(movie.trailer) && <Card.Footer>
+                    Trailer:
+                    <YouTube videoId={getYoutubeIdFromUrl(movie.trailer)} />
+                </Card.Footer>}
             </Card>
+
+            <Modal show={showModal} onHide={handleClose}>
+                <Modal.Header closeButton>
+                    <Modal.Title>Warning</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>Are you sure you want to delete this movie?</Modal.Body>
+                <Modal.Footer>
+                    <Button variant="secondary" onClick={handleClose}>
+                        Cancel
+                    </Button>
+                    <Button variant="danger" onClick={handleConfirm}>
+                        Delete
+                    </Button>
+                </Modal.Footer>
+            </Modal>
         </div >
     );
 };
