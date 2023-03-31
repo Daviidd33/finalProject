@@ -1,5 +1,7 @@
 const mongoose = require("mongoose");
 
+// here is collection of the database 
+
 const movieSchema = new mongoose.Schema({
     title: String,
     description: String,
