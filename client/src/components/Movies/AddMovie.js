@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Form, Button } from 'react-bootstrap';
 import { addMovie } from '../../api';
+import { useNavigate } from 'react-router-dom';
 
 const AddMovie = () => {
     const [title, setTitle] = useState('');
@@ -9,10 +10,15 @@ const AddMovie = () => {
     const [runtime, setRuntime] = useState('');
     const [cast, setCast] = useState('');
     const [image, setImage] = useState('');
-    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [trailer, setTrailer] = useState('');
+    const navigate = useNavigate()
 
     const handleTitleChange = (event) => {
         setTitle(event.target.value);
+    };
+
+    const handleTrailerChange = (event) => {
+        setTrailer(event.target.value);
     };
 
     const handleDescriptionChange = (event) => {
@@ -37,7 +43,6 @@ const AddMovie = () => {
 
     const handleSubmit = async (event) => {
         event.preventDefault();
-        setIsSubmitting(true);
 
         try {
             await addMovie({
@@ -47,19 +52,19 @@ const AddMovie = () => {
                 runtime,
                 cast: cast.split(',').map((c) => c.trim()),
                 image,
+                trailer,
             });
 
+            navigate("/")
         } catch (err) {
             console.error(err);
-        } finally {
-            setIsSubmitting(false);
         }
     };
 
     return (
         <div>
             <h1>Add Movie</h1>
-            <Form onSubmit={handleSubmit}>
+            <Form onSubmit={handleSubmit} style={{ margin: "auto", maxWidth: '500px' }}>
                 <Form.Group controlId="formTitle">
                     <Form.Label>Title</Form.Label>
                     <Form.Control
@@ -112,12 +117,21 @@ const AddMovie = () => {
                         onChange={handleImageChange}
                     />
                 </Form.Group>
+                <Form.Group controlId="formTrailer">
+                    <Form.Label>Trailer URL</Form.Label>
+                    <Form.Control
+                        type="text"
+                        value={trailer}
+                        onChange={handleTrailerChange}
+                    />
+                </Form.Group>
                 <Button
                     variant="primary"
                     type="submit"
-                    disabled={!title || !description || !releaseDate || !runtime || !cast || !image || isSubmitting}
+                    style={{ margin: "1rem" }}
+                    disabled={!title || !description || !releaseDate || !runtime || !cast}
                 >
-                    {isSubmitting ? 'Submitting...' : 'Submit'}
+                    Submit
                 </Button>
             </Form>
         </div>

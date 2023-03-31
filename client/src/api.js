@@ -33,10 +33,3 @@ export const searchMovies = async (query) => {
     const response = await axios.get(`${API_URL}${MOVIE_ROUTE}/search?query=${query}`);
     return response.data;
 };
-
-export const rateMovie = async (id, rating) => {
-    const response = await axios.post(`${API_URL}${MOVIE_ROUTE}/${id}/rate`, {
-        rating,
-    });
-    return response.data;
-};

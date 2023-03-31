@@ -68,35 +68,4 @@ router.delete('/:id', async (req, res) => {
     }
 });
 
-// http://localhost:3001/api/movies/search/:query
-router.get('/search/:query', async (req, res) => {
-    try {
-        const query = req.params.query.toLowerCase();
-        let movies = await Movie.find();
-
-        movies = movies.filter(movie => {
-            // X-MEN -> x
-            const title = movie.title.toLowerCase();
-            if (title.includes(query)) {
-                return movie;
-            }
-
-            const description = movie.description.toLowerCase();
-            if (description.includes(query)) {
-                return movie;
-            }
-
-            // const rating = movie.ratings => movie.ratings.reduce((a, b) => a + b) / movie.ratings.length;
-            // if (ratings.sum(query)) {
-            //     return movie;
-            // }
-        })
-
-        res.json(movies);
-    } catch (err) {
-        console.log(`Error searching movies: ${err}`);
-        res.status(500).send('Server error');
-    }
-});
-
 module.exports = router;

@@ -9,7 +9,6 @@ const movieSchema = new mongoose.Schema({
     runtime: Number,
     cast: [String],
     image: String,
-    ratings: [Number], //rating 1-5
     trailer: String
 });
 
