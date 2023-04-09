@@ -6,7 +6,7 @@ const mongoCloudCS = "mongodb+srv://dav07953:1234@cluster0.fufwarw.mongodb.net/c
 function mongooseConnectDB() {
     // Connect to MongoDB
     mongoose
-        .connect(mongoLocalCS, {
+        .connect(mongoCloudCS, {
             useNewUrlParser: true,
             useUnifiedTopology: true,
         })
