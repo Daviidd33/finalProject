@@ -1,7 +1,10 @@
 import axios from 'axios';
 
-const API_URL = 'http://localhost:3001/api';
-// 
+//local running
+//const API_URL = 'http://localhost:3001/api';
+//Cloud running
+const API_URL = 'https://cine-movies.onrender.com/api';
+
 const MOVIE_ROUTE = "/movies"
 
 export const getMovies = async () => {
